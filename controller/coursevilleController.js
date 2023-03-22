@@ -107,18 +107,71 @@ exports.getProfileInformation = (req, res) => {
 // TODO #3.2: Send "GET" request to CV endpoint to get all courses that you enrolled
 exports.getCourses = (req, res) => {
   // You should change the response below.
-  res.send("This route should get all courses that you enrolled.");
+  const Options = {
+      headers: {
+        Authorization: `Bearer ${req.session.token.access_token}`,
+      },
+  };
+  try{
+    const Req = https.request(
+        "https://www.mycourseville.com/api/v1/public/get/user/courses",
+        Options,
+        (Res) => {
+          let resonseData = "";
+          Res.on("data", (chunk) => {
+            resonseData += chunk;
+          });
+          Res.on("end", () => {
+            const response = JSON.parse(responseData);
+            res.send(response);
+            res.end();
+          });
+        }
+    );
+    Req.on("error", (err) => {
+        console.error(err);
+    });
+    Req.end();
+  } catch (error) {
+    console.log(error);
+    console.log("Please logout, then login again.");
+  }
   res.end();
 };
 
 // TODO #3.4: Send "GET" request to CV endpoint to get all course assignments based on cv_cid
 exports.getCourseAssignments = (req, res) => {
   const cv_cid = req.params.cv_cid;
-  // You should change the response below.
-  res.send("This route should get all course assignments based on cv_cid.");
-  res.end();
+  const Options = {
+    headers: {
+      Authorization: `Bearer ${req.session.token.access_token}`,
+    },
+  };
+  try{
+    const Req = https.request(
+        "https://www.mycourseville.com/api/v1/public/get/course/assignments?cv_cid=" + cv_cid,
+        Options,
+        (Res) => {
+          let resonseData = "";
+          Res.on("data", (chunk) => {
+            resonseData += chunk;
+          });
+          Res.on("end", () => {
+            const response = JSON.parse(responseData);
+            res.send(response);
+            res.end();
+          });
+        }
+    );
+    Req.on("error", (err) => {
+        console.error(err);
+    });
+    Req.end();
+  } catch (error) {
+    console.log(error);
+    console.log("Please logout, then login again.");
+  }
 };
-
 // Outstanding #2
 exports.getAssignmentDetail = (req, res) => {
   const itemid = req.params.item_id;
